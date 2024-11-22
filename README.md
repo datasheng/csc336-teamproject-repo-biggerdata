@@ -4,7 +4,7 @@
 
 CourseFlow provides a seamless and efficient solution for university students navigating the complex - and often frustrating - course registration process.
 
-## Setup Instructions
+## Server Setup Instructions
 
 1. Install development headers and libraries
 
@@ -28,14 +28,22 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-4. Install project dependencies
+4. Install project dependencies in server directory
 ```
 pip install -r requirements.txt
 ```
 
-5. Run Flask server
+5. Add .env file containing the credentials
+```
+MY_HOST=localhost
+MY_USER=MySQL_user
+MY_PASSWORD=MySQL_password
+MY_DB=MySQL_database
+```
+
+6. Run Flask server
 ```
 python app.py
 ```
 
-6. Visit http://127.0.0.1:5000 on web browser
+7. Open http://127.0.0.1:5000 in web browser
