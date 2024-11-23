@@ -1,8 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import './App.css';
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from './Components/Login/Login';
-import Register from './Components/Register/Register';
+import Reset from './Components/Reset/Reset';
+
 
 function App() {
   return (
@@ -11,8 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<Login />} />
-          <Route path = "/register" element={<Register />} />
-          <Route path = "/login" element={<Login />} />
+          <Route path = "/resetpassword" element={<Reset />} />
         </Routes>
       </BrowserRouter>
       </>
