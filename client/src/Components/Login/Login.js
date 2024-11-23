@@ -1,37 +1,55 @@
-import React from 'react';
-import './Login.css';
-import { Link } from "react-router-dom";
-import { FaUser, FaLock } from "react-icons/fa";
+import React, { useState } from "react";
+import "./Login.css";
 
 const Login = () => {
-    return (
-        <section className='background'>
-            <div className='wrapper'>
-                <form action=''>
-                    <h1>Login</h1>
-                    <div className='input-box'>
-                        <input type='text' placeholder='Username' required/>
-                        <FaUser className='icon'/>
-                    </div>
+  const [isRightActive, setIsRightActive] = useState(false);
 
-                    <div className='input-box'>
-                        <input type='text' placeholder='Password' required/>
-                        <FaLock className='icon'/>
-                    </div>
+  const handleToggle = () => {
+    setIsRightActive(!isRightActive);
+  };
 
-                    <div className='forgot-pw'>
-                        <a href='/resetpassword'>Forgot Password?</a>
-                    </div>
+  return (
+    <div className={`container ${isRightActive ? "right-active" : ""}`}>
+      <div className="main-container">
+        <div className="login">
+          <form>
+            <h1>Login</h1>
+            <input type="email" placeholder="Email" required />
+            <input type="password" placeholder="Password" required />
+            <a href="/resetpassword">Forgot Password?</a>
+            <button type="submit">Log in</button>
+          </form>
+        </div>
 
-                    <button type='submit'>Login</button>
+        <div className="register">
+          <form>
+            <h1>Register</h1>
+            <input type="text" placeholder="First Name" required />
+            <input type="text" placeholder="Last Name" required />
+            <input type="email" placeholder="Email" required />
+            <input type="password" placeholder="Password" required />
+            <input type="password" placeholder="Confirm Password" required />
+            <button type="submit">Register</button>
+          </form>
+        </div>
 
-                    <div className='register-user'>
-                        <p>New? <Link to="/register">Register Here!</Link></p>
-                    </div>
-                </form>   
-            </div>
-        </section>
-    );
+      <div className="overlay-container">
+        <div className="overlay">
+          <div className="left">
+            <h2>Welcome to CourseFlow!</h2>
+            <p>Already registered?</p>
+            <button type="button" className="log-in-button" onClick={handleToggle}>Log In Here!</button>
+          </div>
+          <div className="right">
+            <h2>Welcome Back to CourseFlow!</h2>
+            <p>Not a user?</p>
+            <button type="button" className="register-button" onClick={handleToggle}>Register Here!</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  );
 };
 
-export default Login; 
+export default Login;
