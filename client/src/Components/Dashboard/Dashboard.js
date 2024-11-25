@@ -58,7 +58,7 @@ const Dashboard = () => {
       ) : (
         <p>Loading...</p>
       )}
-	  {message.length > 0 && <p>{message}</p>}
+      {message.length > 0 && <p>{message}</p>}
     </div>
   );
 };
