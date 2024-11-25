@@ -16,62 +16,62 @@ const Login = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-	if (password !== confirmPassword) {
+    if (password !== confirmPassword) {
       setMessage('Passwords do not match');
       return;
     }
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-			firstName,
-			lastName,
-            email,
-            password,
-          }),
-		  credentials: 'include',
-        });
-        const data = await response.json();
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+        credentials: 'include',
+      });
+      const data = await response.json();
         if (response.ok) {
           setMessage('User registered');
         }
-		else {
+        else {
           setMessage(data.error);
         }
       }
-	  catch (error) {
+      catch (error) {
         setMessage('Register error');
-    }
+      }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault(); 
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-		  credentials: 'include',
-        });
-        const data = await response.json();
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+        credentials: 'include',
+      });
+      const data = await response.json();
         if (response.ok) {
           setMessage('Login successful');
-		  window.location.href = '/dashboard';
+          window.location.href = '/dashboard';
         }
-		else {
+	else {
           setMessage(data.error);
         }
       }
-	  catch (error) {
-        setMessage('Login error');
+    catch (error) {
+      setMessage('Login error');
     }
   };
 
@@ -106,13 +106,13 @@ const Login = () => {
             <h2>Welcome to CourseFlow!</h2>
             <p>Already registered?</p>
             <button type="button" className="log-in-button" onClick={handleToggle}>Log In Here!</button>
-			{message.length > 0 && <p>{message}</p>}
+            {message.length > 0 && <p>{message}</p>}
           </div>
           <div className="right">
             <h2>Welcome Back to CourseFlow!</h2>
             <p>Not a user?</p>
             <button type="button" className="register-button" onClick={handleToggle}>Register Here!</button>
-			{message.length > 0 && <p>{message}</p>}
+            {message.length > 0 && <p>{message}</p>}
           </div>
         </div>
       </div>
