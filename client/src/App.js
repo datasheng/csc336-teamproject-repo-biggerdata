@@ -13,14 +13,12 @@ function App() {
         <Routes>
           <Route index element={<Login />} />
           <Route path = "/resetpassword" element={<Reset />} />
-  		    <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
-      </>
-
+    </>
     </div>
   );
-
 }
 
 export default App;
