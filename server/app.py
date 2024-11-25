@@ -47,14 +47,13 @@ def login():
     user = cursor.fetchone()
     cursor.close()
     if user and check_password_hash(user['password'], password):
-        session['isLogin'] = True
         session['email'] = user['email']
         return jsonify({'message': 'Login successful'}), 200
     return jsonify({'error': 'Wrong email or password'}), 400
 
 @app.route('/api/dashboard', methods=['GET'])
 def dashboard():
-    if 'isLogin' in session:
+    if 'email' in session:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM account WHERE email = %s', (session['email'],))
         user = cursor.fetchone()
@@ -66,7 +65,6 @@ def dashboard():
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
-    session.pop('isLogin', None)
     session.pop('email', None)
     return jsonify({'message': 'Log out successful'}), 200
 
