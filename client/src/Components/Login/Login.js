@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { TbEyeClosed, TbEye } from "react-icons/tb";
+import { FaRegUser } from "react-icons/fa";
 import "./Login.css";
 
 const Login = () => {
@@ -10,6 +12,12 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const pwdToggle = () => {
+    setShowPassword(!showPassword);
+  }
+	
   const handleToggle = () => {
     setIsRightActive(!isRightActive);
   };
@@ -82,8 +90,14 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <h1>Login</h1>
             <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <a href="/resetpassword">Forgot Password?</a>
+	    <FaRegUser className="user-icon"/>
+	
+            <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <div className="pwd-icon" onClick={pwdToggle}>
+              {showPassword ? <TbEye /> : <TbEyeClosed />}
+            </div>
+	
+	    <a href="/resetpassword">Forgot Password?</a>
             <button type="submit">Log in</button>
           </form>
         </div>
