@@ -68,12 +68,39 @@ p{
 
 input{
     background: #eee;
-    padding: 12px 15px;
+    padding: 12px 45px 12px 12px; /* Padding Values: Top, Right, Bottom, Left */
     margin: 8px 15px;
     width: 100%;
     border-radius: 5px;
     border: none;
     outline: none;
+}
+
+
+.user-icon{
+    position: absolute;
+    right: 60px;
+    top: 31.5%;
+    font-size: 16px;
+}
+
+.pwd-icon{
+    position: absolute;
+    right: 60px;
+    bottom: 50%;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+
+.pwd-icon:hover{
+    background: rgb(201, 195, 195);
+    border: transparent;
+    border-radius: 5px;
+    color: #769aed;
+    transform: scale(1.5);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
 }
 
 a{
@@ -119,7 +146,7 @@ button.register-button, button.log-in-button{
     cursor: pointer;
 }
 
-button:hover, button2:hover {
+button:hover{
     transform: scale(1.05);
     transition: all 0.4s ease-out;
 }
@@ -133,7 +160,7 @@ button:hover, button2:hover {
     transform: translateX(100%);
     opacity: 1;
     z-index: 2; /* Value determines where on the page the login page disappears and the register page appears (and vice versa); 
-                Must be > 1 else login appears on both halves*/
+                Must be a whole # > 1, or else login appears on both halves; Ideal value = 2 */
 }
 
 .overlay-container{
