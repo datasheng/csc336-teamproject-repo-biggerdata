@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    align-items:center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background: white;
+    font-family: "Newsreader", serif;
+    min-height: 100%;
+    margin: 10%;
+}
+
+.main-container{
+    position: relative;
+    width: 768px;
+    max-width: 100%;
+    min-height: 480px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1),
+                0 0 10px rgba(0, 0, 0, .1);
+}
+
+.login, .register{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transition: all 0.6s ease; /* Speed of the transition of the back -> From Login to Register */
+}
+
+.login{
+    width: 50%;
+    z-index: 2;
+}
+
+.register{
+    width: 50%;
+    z-index: 1;
+}
+
+form{
+    align-items:center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background: white;
+    padding: 30px 40px;
+    height: 100%;
+    text-align: center;
+}
+
+h1, h2{
+    font-weight: bold;
+    margin: 0;
+}
+
+p{
+    font-size: 14px;
+    margin: 0; 
+}
+
+input{
+    background: #eee;
+    padding: 12px 45px 12px 12px; /* Padding Values: Top, Right, Bottom, Left */
+    margin: 8px 15px;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+
+.user-icon{
+    position: absolute;
+    right: 60px;
+    top: 31.5%;
+    font-size: 16px;
+}
+
+.pwd-icon{
+    position: absolute;
+    right: 60px;
+    bottom: 50%;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+
+.pwd-icon:hover{
+    background: rgb(201, 195, 195);
+    border: transparent;
+    border-radius: 5px;
+    color: #769aed;
+    transform: scale(1.5);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+a{
+    color: black;
+    font-size: 14px;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+a:hover{
+    color: blueviolet;
+    font-size: 14px;
+    text-decoration: underline;
+    margin: 15px 0;
+}
+
+button{
+    color: white;
+    background: linear-gradient(180deg,#005C97, #2980B9, #6DD5FA);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 55px;
+    margin: 20px;
+    border-radius: 40px;
+    border: 1px solid black;
+    outline: none;
+    transition: all 0.2s ease-in;
+    cursor: pointer;
+}
+
+
+button.register-button, button.log-in-button{
+    color: black;
+    background: linear-gradient(180deg, #FDC830, #f37335);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 55px;
+    margin: 20px;
+    border-radius: 40px;
+    border: 1px solid white;
+    outline: none;
+    transition: all 0.2s ease-in;
+    cursor: pointer;
+}
+
+button:hover{
+    transform: scale(1.05);
+    transition: all 0.4s ease-out;
+}
+
+
+.container.right-active .login{
+    transform: translateX(100%);
+}
+
+.container.right-active .register{
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 2; /* Value determines where on the page the login page disappears and the register page appears (and vice versa); 
+                Must be a whole # > 1, or else login appears on both halves; Ideal value = 2 */
+}
+
+.overlay-container{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out; /* Speed of the transition of the blue container */
+    z-index: 100;
+}
+
+.container.right-active .overlay-container{
+    transform: translateX(-100%);
+}
+
+.overlay{ 
+    position: relative;
+    color: white;
+    background: linear-gradient(135deg,#33539E, #7FACD6);
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out; /* Speed of the transition of the TEXT within blue container */
+}
+
+.container.right-active .overlay{
+    transform: translateX(50%); /* Moves blue container from one half to the other */
+}
+
+.left, .right{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    width: 50%;
+}
+
+.right{
+    right: 0;
+    transform: translateX(0);
+}
