@@ -51,8 +51,8 @@ def login():
         return jsonify({'message': 'Login successful'}), 200
     return jsonify({'error': 'Wrong email or password'}), 400
 
-@app.route('/api/dashboard', methods=['GET'])
-def dashboard():
+@app.route('/api/homepage', methods=['GET'])
+def homepage():
     if 'email' in session:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM account WHERE email = %s', (session['email'],))
