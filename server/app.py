@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,7 +6,13 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-app = Flask(__name__)
+
+print("Host:", os.getenv('MY_HOST'))
+print("User:", os.getenv('MY_USER'))
+print("Password:", os.getenv('MY_PASSWORD'))
+print("Database:", os.getenv('MY_DB'))
+app = Flask(__name__, static_folder='../client/build/static', static_url_path='/static')
+
 CORS(app, supports_credentials=True)
 
 app.secret_key = os.getenv('MY_KEY')
@@ -17,6 +23,15 @@ app.config['MYSQL_DB'] = os.getenv('MY_DB')
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react_frontend(path):
+    react_build_path = os.path.join(os.path.dirname(__file__), '../client/build')
+    if path != "" and os.path.exists(os.path.join(react_build_path, path)):
+        return send_from_directory(react_build_path, path)
+    return send_from_directory(react_build_path, 'index.html')
+
 
 @app.route('/api/register', methods=['POST'])
 def register():
