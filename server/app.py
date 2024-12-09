@@ -68,5 +68,43 @@ def logout():
     session.pop('email', None)
     return jsonify({'message': 'Log out successful'}), 200
 
+@app.route('/api/add-course', methods=['POST'])
+def add_course():
+    data = request.get_json()
+    courseID = data.get('courseID')
+    creditHours = data.get('creditHours')
+    departmentID = data.get('departmentID')
+    collegeID = data.get('collegeID')
+    
+    if not courseID or not creditHours:
+        return jsonify({'error': 'CourseID and CreditHours are required'}), 400
+    
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute('''
+            INSERT INTO Course (CourseID, CreditHours, DepartmentID, CollegeID) 
+            VALUES (%s, %s, %s, %s)
+        ''', (courseID, creditHours, departmentID, collegeID))
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({'message': 'Course added successfully'}), 200
+    except Exception as e:
+        cursor.close()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/courses', methods=['GET'])
+def list_courses():
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM course')  # Fetch all courses
+        courses = cursor.fetchall()
+        cursor.close()
+
+        # Return the courses as a JSON response
+        return jsonify({'courses': courses}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)

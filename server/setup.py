@@ -19,6 +19,23 @@ mysql = MySQL(app)
 def index():
     cursor = mysql.connection.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS account (firstName VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, email VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, PRIMARY KEY (email))')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Department (
+            DepartmentID VARCHAR(255) PRIMARY KEY,
+            DepartmentName VARCHAR(255) NOT NULL
+        )
+    ''')
+        
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Course (
+            CourseID VARCHAR(255) PRIMARY KEY,
+            CreditHours INT NOT NULL,
+            DepartmentID VARCHAR(255),
+            FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID)
+        )
+    ''')
+    
     mysql.connection.commit()
     cursor.close()
     return 'table created'
