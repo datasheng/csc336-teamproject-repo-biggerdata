@@ -105,6 +105,35 @@ def list_courses():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/delete_course', methods=['DELETE'])
+def delete_course():
+    data = request.get_json()
+    course_id = data.get('CourseID')
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('DELETE FROM Course WHERE CourseID = %s', (course_id,))
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify({'message': f'Course {course_id} deleted successfully!'}), 200
+
+@app.route('/api/list_departments', methods=['GET'])
+def list_departments():
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM Department')
+    departments = cursor.fetchall()
+    cursor.close()
+
+    return jsonify({'departments': departments}), 200
+
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM Department')
+    departments = cursor.fetchall()
+    cursor.close()
+
+    return jsonify({'departments': departments}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
