@@ -26,13 +26,42 @@ def index():
             DepartmentName VARCHAR(255) NOT NULL
         )
     ''')
-        
+    
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Course (
-            CourseID VARCHAR(255) PRIMARY KEY,
-            CreditHours INT NOT NULL,
-            DepartmentID VARCHAR(255),
-            FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID)
+        CREATE TABLE IF NOT EXISTS University (
+            UniversityID BIGINT PRIMARY KEY AUTO_INCREMENT,
+            Enrolled BIGINT
+        )
+    ''')   
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Course (
+        CourseID VARCHAR(255) PRIMARY KEY,
+        CreditHours INT NOT NULL,
+        DepartmentID VARCHAR(255),
+        CollegeID BIGINT,
+        FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID),
+        FOREIGN KEY (CollegeID) REFERENCES University(UniversityID)
+    )
+''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Student (
+            UserID BIGINT PRIMARY KEY AUTO_INCREMENT,
+            Name VARCHAR(255) NOT NULL,
+            UserEmail VARCHAR(255) NOT NULL UNIQUE,
+            UniversityID BIGINT,
+            FOREIGN KEY (UniversityID) REFERENCES University(UniversityID)
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS StudentCourses (
+            UserID BIGINT NOT NULL,
+            CourseID VARCHAR(255) NOT NULL,
+            PRIMARY KEY (UserID, CourseID),
+            FOREIGN KEY (UserID) REFERENCES Student(UserID),
+            FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
         )
     ''')
     
