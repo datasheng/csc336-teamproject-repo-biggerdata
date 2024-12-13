@@ -4,7 +4,7 @@
 
 CourseFlow provides a seamless and efficient solution for university students navigating the complex - and often frustrating - course registration process.
 
-## Setup Server
+## Set up Server
 
 1. Install development headers and libraries
 
@@ -33,7 +33,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-5. Add .env file containing the credentials
+5. Add .env file containing the credentials in server directory
 ```
 MY_KEY=secret_key
 MY_HOST=localhost
@@ -41,13 +41,20 @@ MY_USER=MySQL_user
 MY_PASSWORD=MySQL_password
 MY_DB=MySQL_database
 ```
+## Set up Database
 
-6. Set up database tables
+1. Run Flask in server directory
 ```
 python setup.py
 ```
 
-## Setup Client
+2. Open http://127.0.0.1:5000 in web browser to create tables
+
+3. Visit http://127.0.0.1:5000/procedure to create stored procedures
+
+4. Visit http://127.0.0.1:5000/dummy to insert dummy values into tables
+
+## Set up Client
 
 1. Install React in client directory
 ```
