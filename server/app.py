@@ -225,7 +225,7 @@ def list_students_in_course():
     finally:
         cursor.close()
 
-@app.route('/api/add_student', methods=['POST'])
+@app.route('/api/add-student', methods=['POST'])
 def add_student():
     data = request.get_json()
     name = data.get('Name')
@@ -233,8 +233,8 @@ def add_student():
     university_id = data.get('UniversityID')
 
     # Validate input
-    if not name or not user_email:
-        return jsonify({"error": "Name and UserEmail are required fields"}), 400
+    if not name or not user_email or not university_id:
+        return jsonify({"error": "Name, UserEmail, and UniversityID are required fields"}), 400
 
     cursor = mysql.connection.cursor()
     try:
@@ -247,18 +247,20 @@ def add_student():
             (name, user_email, university_id)
         )
         mysql.connection.commit()
-        return jsonify({"message": f"Student {name} added successfully!"}), 200
+
+        # Fetch the newly created student ID
+        new_student_id = cursor.lastrowid
+        return jsonify({"message": f"Student {name} added successfully!", "UserID": new_student_id}), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
+
+
+
+
   
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
