@@ -15,59 +15,56 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
 
-@app.route('/')
-def index():
-    cursor = mysql.connection.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS account (firstName VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, email VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, PRIMARY KEY (email))')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Department (
-            DepartmentID VARCHAR(255) PRIMARY KEY,
-            DepartmentName VARCHAR(255) NOT NULL
-        )
-    ''')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS University (
-            UniversityID BIGINT PRIMARY KEY AUTO_INCREMENT,
-            Enrolled BIGINT
-        )
-    ''')   
-    
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Course (
-        CourseID VARCHAR(255) PRIMARY KEY,
-        CreditHours INT NOT NULL,
-        DepartmentID VARCHAR(255),
-        CollegeID BIGINT,
-        FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID),
-        FOREIGN KEY (CollegeID) REFERENCES University(UniversityID)
-    )
-''')
+def create_table():
+    with app.app_context():
+        cursor = mysql.connection.cursor()
+        try:
+            path = 'create_table.sql'
+            with open(path, 'r') as f:
+                script = f.read()
+            query = script.split(';')
+            for q in query:
+                if q.strip():
+                    cursor.execute(q.strip())
+                    mysql.connection.commit()
+            cursor.close()
+            print('table created')
+        except Exception as e:
+            print(f'create table error: {e}')
 
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Student (
-            UserID BIGINT PRIMARY KEY AUTO_INCREMENT,
-            Name VARCHAR(255) NOT NULL,
-            UserEmail VARCHAR(255) NOT NULL UNIQUE,
-            UniversityID BIGINT,
-            FOREIGN KEY (UniversityID) REFERENCES University(UniversityID)
-        )
-    ''')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS StudentCourses (
-            UserID BIGINT NOT NULL,
-            CourseID VARCHAR(255) NOT NULL,
-            PRIMARY KEY (UserID, CourseID),
-            FOREIGN KEY (UserID) REFERENCES Student(UserID),
-            FOREIGN KEY (CourseID) REFERENCES Course(CourseID)
-        )
-    ''')
-    
-    mysql.connection.commit()
-    cursor.close()
-    return 'table created'
+def stored_procedure():
+    with app.app_context():
+        cursor = mysql.connection.cursor()
+        try:
+            path = 'stored_procedure.sql'
+            with open(path, 'r') as f:
+                script = f.read()
+            cursor.execute(script)
+            mysql.connection.commit()
+            cursor.close()
+            print('stored procedure created')
+        except Exception as e:
+            print(f'stored procedure error: {e}')
+
+@app.route('/procedure', methods=['GET'])
+def procedure():
+    try:
+        stored_procedure()
+        return 'stored procedure created'
+    except Exception as e:
+        return f'stored procedure error: {e}'
+
+@app.route('/dummy', methods=['GET'])
+def dummy():
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.callproc('InsertDummy')
+        mysql.connection.commit()
+        cursor.close()
+        return 'dummy values inserted'
+    except Exception as e:
+        return f'insert error: {e}'
 
 if __name__ == '__main__':
+    create_table()
     app.run(debug=True)
