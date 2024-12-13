@@ -256,6 +256,145 @@ def add_student():
     finally:
         cursor.close()
 
+@app.route('/api/add-class-to-schedule', methods=['POST'])
+def add_class_to_schedule():
+    data = request.get_json()
+    user_id = data.get('UserID')
+    section_id = data.get('SectionID')
+
+    # Validate input
+    if not user_id or not section_id:
+        return jsonify({"error": "UserID and SectionID are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the user exists
+        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
+        student = cursor.fetchone()
+        if not student:
+            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
+
+        # Check if the section exists
+        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
+        section = cursor.fetchone()
+        if not section:
+            return jsonify({"error": f"Class with SectionID {section_id} does not exist"}), 404
+
+        # Check if the student is already enrolled in this section
+        cursor.execute(
+            'SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s',
+            (user_id, section_id)
+        )
+        existing_entry = cursor.fetchone()
+        if existing_entry:
+            return jsonify({"error": "Student is already enrolled in this section"}), 400
+
+        # Add the class to the student's schedule
+        cursor.execute(
+            'INSERT INTO StudentSchedule (UserID, SectionID) VALUES (%s, %s)',
+            (user_id, section_id)
+        )
+        mysql.connection.commit()
+
+        return jsonify({"message": f"Class {section_id} successfully added to the schedule for Student {user_id}!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+@app.route('/api/get-status', methods=['POST'])
+def get_status():
+    data = request.get_json()
+    user_id = data.get('UserID')
+    section_id = data.get('SectionID')
+
+    # Validate input
+    if not user_id or not section_id:
+        return jsonify({"error": "UserID and SectionID are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the user exists
+        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
+        student = cursor.fetchone()
+        if not student:
+            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
+
+        # Check if the section exists
+        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
+        section = cursor.fetchone()
+        if not section:
+            return jsonify({"error": f"Class with SectionID {section_id} does not exist"}), 404
+
+        # Fetch the status of the student in the class
+        cursor.execute(
+            '''
+            SELECT Status
+            FROM Status
+            WHERE UserID = %s AND SectionID = %s
+            ''',
+            (user_id, section_id)
+        )
+        status_entry = cursor.fetchone()
+        if not status_entry:
+            return jsonify({"error": f"No status found for Student {user_id} in Class {section_id}"}), 404
+
+        # Return the status
+        return jsonify({"UserID": user_id, "SectionID": section_id, "Status": status_entry['Status']}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+@app.route('/api/add-class', methods=['POST'])
+def add_class():
+    data = request.get_json()
+    section_id = data.get('SectionID')
+    course_id = data.get('CourseID')
+    staff_id = data.get('StaffID')
+    seats = data.get('Seats')
+
+    # Validate input
+    if not section_id or not course_id or seats is None:
+        return jsonify({"error": "SectionID, CourseID, and Seats are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the SectionID already exists
+        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
+        existing_class = cursor.fetchone()
+        if existing_class:
+            return jsonify({"error": f"Class with SectionID {section_id} already exists"}), 400
+
+        # Check if the course exists
+        cursor.execute('SELECT * FROM Course WHERE CourseID = %s', (course_id,))
+        course = cursor.fetchone()
+        if not course:
+            return jsonify({"error": f"Course with CourseID {course_id} does not exist"}), 404
+
+        # Optional: Check if the staff exists
+        if staff_id:
+            cursor.execute('SELECT * FROM Staff WHERE Staff_ID = %s', (staff_id,))
+            staff = cursor.fetchone()
+            if not staff:
+                return jsonify({"error": f"Staff with StaffID {staff_id} does not exist"}), 404
+
+        # Insert the class into the Class table
+        cursor.execute(
+            '''
+            INSERT INTO Class (SectionID, CourseID, StaffID, Seats)
+            VALUES (%s, %s, %s, %s)
+            ''',
+            (section_id, course_id, staff_id, seats)
+        )
+        mysql.connection.commit()
+        return jsonify({"message": f"Class {section_id} added successfully for Course {course_id}!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+
 
 
 
