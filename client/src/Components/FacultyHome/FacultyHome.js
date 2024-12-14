@@ -42,8 +42,8 @@ const FacultyHome = ({ setIsLoggedIn }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="content">
-        <div className="content-section">
+      <main className="faculty-content">
+        <div className="faculty-content-section">
           {/* Conditional rendering for the 'main' tab */}
           {isActive === 'main' && (
             <>
