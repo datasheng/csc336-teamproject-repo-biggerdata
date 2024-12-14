@@ -21,7 +21,7 @@ const FacultyHome = ({ setIsLoggedIn }) => {
   return (
     <div className="course-registration-layout">
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className="faculty-sidebar">
         <h2>Navigation</h2>
         <ul>
           <li onClick={() => handleClick("main")}
