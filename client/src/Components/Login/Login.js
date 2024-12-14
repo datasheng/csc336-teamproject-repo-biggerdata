@@ -72,7 +72,7 @@ const Login = () => {
       const data = await response.json();
         if (response.ok) {
           setMessage('Login successful');
-          window.location.href = '/dashboard';
+          window.location.href = '/homepage';
         }
 	else {
           setMessage(data.error);

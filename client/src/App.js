@@ -1,15 +1,14 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Components/Login/Login";
-import Reset from "./Components/Reset/Reset";
-import Homepage from "./Components/Homepage/Homepage";
-import FacultyHome from "./Components/FacultyHome/FacultyHome";
+import "bootstrap/dist/css/bootstrap.min.css"
+
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from './Components/Login/Login';
+import Reset from './Components/Reset/Reset';
+import Homepage from './Components/Homepage/Homepage';
 import Browse from './Components/Browse/Browse';
 import Schedule from "./Components/Schedule/Schedule";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); {/* User starts logged in for testing */}
-  const [userRole, setUserRole] = useState(""); {/* Tracks role: 'user' or 'faculty' */}
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // User starts logged in for testing
 
   return (
     <Router>
@@ -19,22 +18,17 @@ function App() {
           path="/"
           element={
             isLoggedIn ? (
-              userRole === "user" ? (
-                <Navigate to="/user-homepage" replace />
-              ) : (
-                <Navigate to="/faculty-homepage" replace />
-              )
+              <Navigate to="/homepage" replace />
             ) : (
-              <Login setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} />
+              <Login setIsLoggedIn={setIsLoggedIn} />
             )
           }
         />
-
-        {/* User Homepage Route */}
+        {/* Homepage Route */}
         <Route
-          path="/user-homepage"
+          path="/homepage"
           element={
-            isLoggedIn && userRole === "user" ? (
+            isLoggedIn ? (
               <Homepage setIsLoggedIn={setIsLoggedIn} />
             ) : (
               <Navigate to="/" replace />
@@ -42,26 +36,23 @@ function App() {
           }
         />
 
-        {/* Faculty Homepage Route */}
-        <Route
-          path="/faculty-homepage"
-          element={
-            isLoggedIn && userRole === "faculty" ? (
-              <FacultyHome setIsLoggedIn={setIsLoggedIn} />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
+        {/* Reset Password Route */}
+        <Route 
+          path="/resetpassword"
+          element={<Reset />} 
         />
 
-        {/* Reset Password Route */}
-        <Route path="/resetpassword" element={<Reset />} />
-
         {/* Browse Route */}
-        <Route path="/browse" element={<Browse />} />
+        <Route
+          path="/browse"
+          element={<Browse />}
+        />
 
         {/* Schedule Route */}
-        <Route path="/schedule_build" element={<Schedule />} />
+        <Route
+          path="/schedule_build"
+          element={<Schedule />}
+        />
       </Routes>
     </Router>
   );
