@@ -19,6 +19,24 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
 
+def stored_procedure():
+    try:
+        cursor = mysql.connection.cursor()
+        with open('sql/stored_procedure_app.sql', 'r') as f:
+            sql = f.read()
+            cursor.execute(sql)
+            mysql.connection.commit()
+            print('stored procedure created')
+    except Exception as e:
+        print(f'stored procedure error: {e}')
+    finally:
+        if cursor:
+            cursor.close()
+
+def initialize():
+    with app.app_context():
+        stored_procedure()
+
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -28,15 +46,18 @@ def register():
     password = data.get('password')
     hash = generate_password_hash(password)
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM account WHERE email = %s', (email,))
+    # check if email already exists
+    cursor.callproc('CheckEmail', (email,))
     user = cursor.fetchone()
+    cursor.close()
     if user:
-        cursor.close()
         return jsonify({'error': 'Email already exists'}), 400
-    cursor.execute('INSERT INTO account (firstName, lastName, email, password) VALUES (%s, %s, %s, %s)', (firstName, lastName, email, hash))
+    # if not then register user
+    cursor = mysql.connection.cursor()
+    cursor.callproc('RegisterUser', (firstName, lastName, email, hash))
     mysql.connection.commit()
     cursor.close()
-    return jsonify({'message': 'User registered'}), 200
+    return jsonify({'message': 'User registered successfully'}), 200
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -44,9 +65,11 @@ def login():
     email = data.get('email')
     password = data.get('password')
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM account WHERE email = %s', (email,))
+    # check if email already exists
+    cursor.callproc('CheckEmail', (email,))
     user = cursor.fetchone()
     cursor.close()
+    # if so and password matches then log in user
     if user and check_password_hash(user['password'], password):
         session['email'] = user['email']
         return jsonify({'message': 'Login successful'}), 200
@@ -54,9 +77,10 @@ def login():
 
 @app.route('/api/homepage', methods=['GET'])
 def homepage():
+    # if user is logged in
     if 'email' in session:
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM account WHERE email = %s', (session['email'],))
+        cursor.callproc('CheckEmail', (session['email'],))
         user = cursor.fetchone()
         cursor.close()
         if user:
@@ -394,13 +418,6 @@ def add_class():
     finally:
         cursor.close()
 
-
-
-
-
-
-  
-
-
 if __name__ == '__main__':
+    initialize()
     app.run(debug=True)
