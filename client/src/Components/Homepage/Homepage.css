@@ -1,13 +1,13 @@
 /* Overall Layout */
 .course-registration-layout {
     display: flex;
-    height: 100vh;
+    height: 100%;
     font-family: Arial, sans-serif;
   }
   
   /* Sidebar */
 .sidebar {
-    width: 250px;
+    width: 25%;
     background-color: #33539E;
     color: white;
     padding: 20px;
@@ -35,15 +35,14 @@
 }
   
 .sidebar ul li:hover {
-    background-color: #34495e;
-    transform: scale(1.05);
+    transform: scale(1.10);
 }
   
 /* Main Content */
 .content {
     flex: 1;
     padding: 20px;
-    background-color: #ecf0f1;
+    background-color: #dde3e4;
     overflow-y: auto;
 }
   
@@ -57,12 +56,24 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
   
 .content-section h2 {
     font-size: 1.5em;
     margin-bottom: 10px;
     color: #2c3e50;
+}
+
+.content-section h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: black;
+    cursor: pointer;
+}
+
+.content-section h3:hover {
+    color: #FDC830;
 }
   
 .content-section ul {
@@ -73,4 +84,14 @@
 .content-section ul li {
     margin: 5px 0;
     font-size: 1em;
+}
+
+
+/* Dropdown Menu */
+.dropdown-menu {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 5px;
+    border-left: 2px solid #1b4199;
+    background-color: #f9f9f9;
 }
