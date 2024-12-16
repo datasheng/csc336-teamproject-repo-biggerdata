@@ -157,7 +157,6 @@ def delete_course():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/list_departments', methods=['GET'])
 def list_departments(): 
     cursor = mysql.connection.cursor()
@@ -265,7 +264,6 @@ def add_student():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-
 
 @app.route('/api/get-status', methods=['POST'])
 def get_status():
@@ -453,6 +451,88 @@ def add_class_to_schedule():
         )
         mysql.connection.commit()
         return jsonify({"message": f"Class Section {section_id} successfully added to the schedule for Student {user_id}!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+@app.route('/api/deregister_student', methods=['POST'])
+def deregister_student():
+    data = request.get_json()  # Receive JSON data in the body
+    user_id = data.get('UserID')  # Extract UserID from the JSON body
+    course_id = data.get('CourseID')  # Extract CourseID from the JSON body
+
+    # Validate input
+    if not user_id or not course_id:
+        return jsonify({"error": "UserID and CourseID are required"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the student is enrolled in the given course
+        cursor.execute('''
+            SELECT * FROM StudentCourses WHERE UserID = %s AND CourseID = %s
+        ''', (user_id, course_id))
+        enrollment = cursor.fetchone()
+        
+        # If no such enrollment exists, return an error
+        if not enrollment:
+            return jsonify({"error": f"Student {user_id} is not enrolled in Course {course_id}"}), 404
+        
+        # If the student is enrolled, delete the enrollment from StudentCourses
+        cursor.execute('''
+            DELETE FROM StudentCourses WHERE UserID = %s AND CourseID = %s
+        ''', (user_id, course_id))
+        mysql.connection.commit()
+
+        # Return success message
+        return jsonify({"message": f"Student {user_id} successfully deregistered from Course {course_id}!"}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+
+@app.route('/api/update_student_schedule', methods=['POST'])
+def update_student_schedule():
+    data = request.get_json()
+    user_id = data.get('UserID')
+    old_section_id = data.get('OldSectionID')
+    new_section_id = data.get('NewSectionID')
+
+    # Validate input
+    if not user_id or not old_section_id or not new_section_id:
+        return jsonify({"error": "UserID, OldSectionID, and NewSectionID are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the student is enrolled in the old section
+        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, old_section_id))
+        existing_enrollment = cursor.fetchone()
+        if not existing_enrollment:
+            return jsonify({"error": "Student is not enrolled in the specified old section"}), 404
+
+        # Check if the new section exists
+        cursor.execute('SELECT * FROM ClassSection WHERE SectionID = %s', (new_section_id,))
+        new_section = cursor.fetchone()
+        if not new_section:
+            return jsonify({"error": "New section does not exist"}), 404
+
+        # Check if the student is already enrolled in the new section
+        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, new_section_id))
+        existing_schedule = cursor.fetchone()
+        if existing_schedule:
+            return jsonify({"error": "Student is already enrolled in the new section"}), 400
+
+        # Remove the student from the old section
+        cursor.execute('DELETE FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, old_section_id))
+
+        # Add the student to the new section
+        cursor.execute('INSERT INTO StudentSchedule (UserID, SectionID) VALUES (%s, %s)', (user_id, new_section_id))
+
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({"message": "Student's schedule updated successfully!"}), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
