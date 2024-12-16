@@ -20,8 +20,8 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 def stored_procedure():
+    cursor = mysql.connection.cursor()
     try:
-        cursor = mysql.connection.cursor()
         with open('sql/stored_procedure_app.sql', 'r') as f:
             sql = f.read()
             cursor.execute(sql)
