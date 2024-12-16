@@ -421,6 +421,45 @@ def add_department():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+        
+@app.route('/api/get-student-schedule', methods=['POST'])
+def get_student_schedule():
+    data = request.get_json()  # Receive JSON data in the body
+    user_id = data.get('UserID')  # Extract UserID from the JSON body
+
+    # Validate input
+    if not user_id:
+        return jsonify({"error": "UserID is required"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the student exists
+        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
+        student = cursor.fetchone()
+        if not student:
+            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
+
+        # Query to fetch courses and schedule the student is enrolled in
+        cursor.execute('''
+            SELECT c.SectionID, c.CourseID, cs.DayOfWeek, cs.StartTime, cs.EndTime
+            FROM StudentSchedule ss
+            JOIN Class c ON ss.SectionID = c.SectionID
+            JOIN ClassSchedule cs ON c.SectionID = cs.SectionID
+            WHERE ss.UserID = %s
+        ''', (user_id,))
+
+        schedule = cursor.fetchall()
+        if not schedule:
+            return jsonify({"message": "No classes found for this student."}), 404
+
+        # Return the schedule as a JSON response
+        return jsonify({'UserID': user_id, 'Schedule': schedule}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+
 
 
 
