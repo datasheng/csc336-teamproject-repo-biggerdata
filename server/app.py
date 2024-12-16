@@ -84,7 +84,7 @@ def homepage():
         user = cursor.fetchone()
         cursor.close()
         if user:
-            return jsonify({'firstName': user['firstName'], 'lastName': user['lastName']}), 200
+            return jsonify({'firstName': user['firstName'], 'lastName': user['lastName'], 'email': user['email']}), 200
         return jsonify({'error': 'User not found'}), 400
     return jsonify({'message': 'Unauthorized access'}), 401
 
@@ -154,26 +154,8 @@ def delete_course():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    data = request.get_json()
-    course_id = data.get('CourseID')
-
-    cursor = mysql.connection.cursor()
-    cursor.execute('DELETE FROM Course WHERE CourseID = %s', (course_id,))
-    mysql.connection.commit()
-    cursor.close()
-
-    return jsonify({'message': f'Course {course_id} deleted successfully!'}), 200
-
 @app.route('/api/list_departments', methods=['GET'])
 def list_departments(): 
-    cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM Department')
-    departments = cursor.fetchall()
-    cursor.close()
-
-    return jsonify({'departments': departments}), 200
-
-
     cursor = mysql.connection.cursor()
     cursor.execute('SELECT * FROM Department')
     departments = cursor.fetchall()
