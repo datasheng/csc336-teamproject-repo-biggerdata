@@ -125,7 +125,7 @@ const Homepage = () => {
             {isActive === 'profile' && (
               <div className="profile-section">
                 <h1>My Profile</h1>
-                <h2><i>Welcome to your profile, User</i></h2>  {/* fetch */}
+                <h2><i>Welcome to your profile, {account.firstName}</i></h2>  {/* fetch */}
 
                 {/* Personal Details Dropdown */}
                 {/* fetch */ }
@@ -139,8 +139,8 @@ const Homepage = () => {
                 {dropdowns.personal && (
                   <ul className="personal-dropdown-menu">
                     <li><b>Student ID:</b> test </li>
-                    <li><b>Username:</b> test </li>
-                    <li><b>Email:</b> test </li>
+                    <li><b>Username:</b> {account.email} </li>
+                    <li><b>Email:</b> {account.email} </li>
                   </ul>
                 )}
 
