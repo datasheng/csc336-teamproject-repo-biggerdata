@@ -17,8 +17,8 @@ mysql = MySQL(app)
 
 def create_table():
     with app.app_context():
+        cursor = mysql.connection.cursor()
         try:
-            cursor = mysql.connection.cursor()
             with open('sql/create_table.sql', 'r') as f:
                 sql = f.read()
             query = sql.split(';')
@@ -35,8 +35,8 @@ def create_table():
 
 def stored_procedure():
     with app.app_context():
+        cursor = mysql.connection.cursor()
         try:
-            cursor = mysql.connection.cursor()
             with open('sql/stored_procedure_setup.sql', 'r') as f:
                 sql = f.read()
             cursor.execute(sql)
