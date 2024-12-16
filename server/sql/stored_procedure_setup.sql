@@ -1,13 +1,17 @@
 DROP PROCEDURE IF EXISTS InsertDummy;
 CREATE PROCEDURE InsertDummy()
 BEGIN
+    INSERT INTO University (UniversityID, UniversityName, Location, ContactEmail)
+    VALUES
+        (1, 'Tech University', '123 University Blvd, Tech City', 'contact@techuniversity.edu');
+
     INSERT INTO Department (DepartmentID, DepartmentName)
     VALUES 
         (1, 'Computer Science'),
         (2, 'Mathematics'),
         (3, 'Physics');
 
-    INSERT INTO Course (CourseID, Credit, DepartmentID)
+    INSERT INTO Course (CourseID, CreditHours, DepartmentID)
     VALUES
         (101, 3, 1),
         (102, 4, 1),
@@ -25,7 +29,7 @@ BEGIN
         (304, 3, 3),
         (305, 4, 3);
 
-    INSERT INTO Staff (StaffID, StaffEmail)
+    INSERT INTO Staff (Staff_ID, Email_ID)
     VALUES
         (1, 'prof1@techuniversity.edu'),
         (2, 'prof2@techuniversity.edu'),
