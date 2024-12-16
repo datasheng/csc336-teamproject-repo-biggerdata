@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Staff (
     PRIMARY KEY (Staff_ID)
 );
 
-CREATE TABLE IF NOT EXISTS ClassSection (
+CREATE TABLE IF NOT EXISTS Class (
     SectionID INT,
     CourseID INT,
     StaffID INT,
