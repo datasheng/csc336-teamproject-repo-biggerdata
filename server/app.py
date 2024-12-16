@@ -99,23 +99,24 @@ def add_course():
     courseID = data.get('courseID')
     creditHours = data.get('creditHours')
     departmentID = data.get('departmentID')
-    collegeID = data.get('collegeID')
     
-    if not courseID or not creditHours:
-        return jsonify({'error': 'CourseID and CreditHours are required'}), 400
+    if not courseID or not creditHours or not departmentID:
+        return jsonify({'error': 'CourseID, CreditHours, and DepartmentID are required'}), 400
     
     cursor = mysql.connection.cursor()
     try:
+        # Insert the course into the Course table
         cursor.execute('''
-            INSERT INTO Course (CourseID, CreditHours, DepartmentID, CollegeID) 
-            VALUES (%s, %s, %s, %s)
-        ''', (courseID, creditHours, departmentID, collegeID))
+            INSERT INTO Course (CourseID, CreditHours, DepartmentID) 
+            VALUES (%s, %s, %s)
+        ''', (courseID, creditHours, departmentID))
         mysql.connection.commit()
         cursor.close()
         return jsonify({'message': 'Course added successfully'}), 200
     except Exception as e:
         cursor.close()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/list_courses', methods=['GET'])
 def list_courses():
@@ -553,6 +554,97 @@ def get_student_profile():
             }), 200
         return jsonify({'error': 'Student not found'}), 404
     return jsonify({'message': 'Unauthorized access'}), 401
+
+@app.route('/api/get-course-details', methods=['POST'])
+def get_course_details():
+    data = request.get_json()
+    course_id = data.get('CourseID')
+
+    # Validate input
+    if not course_id:
+        return jsonify({"error": "CourseID is a required field"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Check if the course exists
+        cursor.execute('SELECT * FROM Course WHERE CourseID = %s', (course_id,))
+        course = cursor.fetchone()
+
+        if not course:
+            return jsonify({"error": f"Course with ID {course_id} not found"}), 404
+
+        # Fetch department details related to the course
+        cursor.execute('SELECT DepartmentName FROM Department WHERE DepartmentID = %s', (course['DepartmentID'],))
+        department = cursor.fetchone()
+
+        if not department:
+            return jsonify({"error": "Department details not found"}), 404
+
+        # Return the course details along with department information
+        return jsonify({
+            'CourseID': course['CourseID'],
+            'CreditHours': course['CreditHours'],
+            'DepartmentName': department['DepartmentName']
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+
+@app.route('/api/get-sections-for-course', methods=['POST'])
+def get_sections_for_course():
+    data = request.get_json()
+    course_id = data.get('CourseID')
+    
+    if not course_id:
+        return jsonify({"error": "CourseID is required"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute('SELECT * FROM ClassSection WHERE CourseID = %s', (course_id,))
+        sections = cursor.fetchall()
+        
+        if not sections:
+            return jsonify({"error": f"No sections found for Course {course_id}"}), 404
+        
+        return jsonify({'CourseID': course_id, 'Sections': sections}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+@app.route('/api/get-staff-schedule', methods=['POST'])
+def get_staff_schedule():
+    data = request.get_json()
+    staff_id = data.get('StaffID')
+    
+    if not staff_id:
+        return jsonify({"error": "StaffID is required"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute('SELECT * FROM Staff WHERE Staff_ID = %s', (staff_id,))
+        staff = cursor.fetchone()
+        
+        if not staff:
+            return jsonify({"error": f"Staff with StaffID {staff_id} does not exist"}), 404
+
+        cursor.execute('''
+            SELECT c.SectionID, c.CourseID, cs.DayOfWeek, cs.StartTime, cs.EndTime
+            FROM ClassSection c
+            JOIN ClassSchedule cs ON c.SectionID = cs.SectionID
+            WHERE c.StaffID = %s
+        ''', (staff_id,))
+        
+        schedule = cursor.fetchall()
+
+        return jsonify({'StaffID': staff_id, 'Schedule': schedule}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
 
 
 
