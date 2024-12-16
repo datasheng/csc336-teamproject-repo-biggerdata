@@ -492,7 +492,6 @@ def deregister_student():
     finally:
         cursor.close()
 
-
 @app.route('/api/update_student_schedule', methods=['POST'])
 def update_student_schedule():
     data = request.get_json()
@@ -537,6 +536,27 @@ def update_student_schedule():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
+@app.route('/api/get-student-profile', methods=['GET'])
+def get_student_profile():
+    if 'email' in session:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Student WHERE UserEmail = %s', (session['email'],))
+        student = cursor.fetchone()
+        cursor.close()
+        if student:
+            return jsonify({
+                'UserID': student['UserID'],
+                'UserEmail': student['UserEmail'],
+                'Name': student['Name'],
+                'UniversityID': student['UniversityID']
+            }), 200
+        return jsonify({'error': 'Student not found'}), 404
+    return jsonify({'message': 'Unauthorized access'}), 401
+
+
+
+
 
 
 
