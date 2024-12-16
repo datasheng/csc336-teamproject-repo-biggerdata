@@ -400,6 +400,33 @@ def add_class():
     finally:
         cursor.close()
 
+@app.route('/api/add-department', methods=['POST'])
+def add_department():
+    data = request.get_json()
+    department_id = data.get('DepartmentID')  # Expecting DepartmentID to be passed
+    department_name = data.get('DepartmentName')
+
+    if not department_id or not department_name:
+        return jsonify({"error": "DepartmentID and DepartmentName are required"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        cursor.execute('''
+            INSERT INTO Department (DepartmentID, DepartmentName)
+            VALUES (%s, %s)
+        ''', (department_id, department_name))
+        mysql.connection.commit()
+        return jsonify({"message": f"Department {department_name} added successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+
+
+
+
+
 if __name__ == '__main__':
     initialize()
     app.run(debug=True)
