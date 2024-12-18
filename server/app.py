@@ -7,7 +7,6 @@ import os
 import MySQLdb
 from datetime import timedelta
 
-
 load_dotenv()
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -120,7 +119,6 @@ def add_course():
         cursor.close()
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/list_courses', methods=['GET'])
 def list_courses():
     try:
@@ -132,7 +130,6 @@ def list_courses():
         return jsonify({'courses': courses}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/delete_course', methods=['DELETE'])
 def delete_course():
@@ -220,7 +217,6 @@ def register_student():
     finally:
         cursor.close()
 
-
 @app.route('/api/add-student', methods=['POST'])
 def add_student():
     data = request.get_json()
@@ -246,7 +242,6 @@ def add_student():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-
 
 @app.route('/api/list_students_in_course', methods=['POST'])
 def list_students_in_course():
@@ -366,8 +361,6 @@ def get_status():
     finally:
         cursor.close()
 
-
-
 @app.route('/api/add-department', methods=['POST'])
 def add_department():
     data = request.get_json()
@@ -456,8 +449,6 @@ def get_student_schedule():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-
-
 
 @app.route('/api/add-class-to-schedule', methods=['POST'])
 def add_class_to_schedule():
@@ -581,7 +572,6 @@ def get_course_details():
     finally:
         cursor.close()
 
-
 @app.route('/api/get-staff-schedule', methods=['POST'])
 def get_staff_schedule():
     data = request.get_json()
@@ -612,7 +602,6 @@ def get_staff_schedule():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-
 
 @app.route('/api/get-sections-for-course', methods=['POST'])
 def get_sections_for_course():
@@ -670,19 +659,6 @@ def add_staff():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     initialize()
