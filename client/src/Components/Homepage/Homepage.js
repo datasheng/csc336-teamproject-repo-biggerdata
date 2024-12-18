@@ -138,7 +138,7 @@ const Homepage = () => {
                 </h3>
                 {dropdowns.personal && (
                   <ul className="personal-dropdown-menu">
-                    <li><b>Student ID:</b> test </li>
+                    <li><b>Student ID:</b> {account.id} </li>
                     <li><b>Username:</b> {account.email} </li>
                     <li><b>Email:</b> {account.email} </li>
                   </ul>
