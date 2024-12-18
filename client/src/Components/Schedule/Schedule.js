@@ -106,7 +106,7 @@ const Schedule = () => {
 
   return (
     <div className="schedule-container">
-        <button className="sched-back-button" onClick={() => navigate("/user-homepage")}>
+        <button className="sched-back-button" onClick={() => navigate("/homepage")}>
           <FaArrowLeft /> Back to Homepage
         </button>
 
