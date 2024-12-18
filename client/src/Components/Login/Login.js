@@ -98,7 +98,7 @@ const Login = () => {
             </div>
 	
 	    <a href="/resetpassword">Forgot Password?</a>
-            <button type="submit">Log in</button>
+            <button type="submit" className="submit">Log in</button>
           </form>
         </div>
 
@@ -110,7 +110,7 @@ const Login = () => {
             <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-            <button type="submit">Register</button>
+            <button type="submit" className="submit">Register</button>
           </form>
         </div>
 
