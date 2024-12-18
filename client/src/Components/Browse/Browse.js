@@ -77,7 +77,7 @@ const Browse = () => {
       <div className="browse-page">
         {/* Header */}
         <header className="browse-header">
-          <button className="browse-back-button" onClick={() => navigate('/user-homepage')}>
+          <button className="browse-back-button" onClick={() => navigate('/homepage')}>
             <FaArrowLeft /> Back to Homepage
           </button>
           <h1>Browse Courses</h1>
