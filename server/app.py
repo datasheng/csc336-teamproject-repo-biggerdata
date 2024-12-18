@@ -86,7 +86,7 @@ def homepage():
         user = cursor.fetchone()
         cursor.close()
         if user:
-            return jsonify({'firstName': user['firstName'], 'lastName': user['lastName'], 'email': user['email']}), 200
+            return jsonify({'id': user['id'], 'firstName': user['firstName'], 'lastName': user['lastName'], 'email': user['email']}), 200
         return jsonify({'error': 'User not found'}), 400
     return jsonify({'message': 'Unauthorized access'}), 401
 
