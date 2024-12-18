@@ -16,7 +16,7 @@ body {
   overflow: hidden;
 }
 
-/* Header  */
+/* Header */
 .browse-header {
   position: relative; 
   display: flex;
@@ -70,72 +70,70 @@ body {
   overflow-y: auto;
 }
 
-/* Search */
-.search-section {
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.search-bar {
-  width: 100%;
-  padding: 12px;
-  font-size: 1.2rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
+/* Filter */
 .filter-text {
   position: absolute;
   right: 10px; 
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1rem;
+  font-size: 1.5rem;
+  text-decoration: underline;
   color: #33539E;
   cursor: pointer;
 }
 
-.filter-text:hover {
-  text-decoration: underline;
+.filter-text:hover{
+  color: #FDC830;
 }
 
-/* Dropdown */
-.dropdown {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  max-height: 200px;
-  overflow-y: auto;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dropdown-item {
-  padding: 10px;
+.refresh-button {
+  margin-left: 10px;
   font-size: 1rem;
-  color: #333;
+  background-color: #FDC830;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
+}
+
+.refresh-button:hover {
+  background-color: #eeaf00;
   transition: background-color 0.2s;
 }
 
-.dropdown-item:hover {
-  background-color: #f4f4f4;
+/* Courses (all) */
+.main-courses {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
-.no-match {
-  color: #777;
-  text-align: center;
-  padding: 10px;
+.browse-course-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 30%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  cursor: pointer;
 }
 
-/* Course details  */
+.browse-course-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #33539E;
+}
+
+.browse-course-card p {
+  font-size: 1rem;
+  margin: 5px 0;
+  color: #333;
+}
+
+/* Course details */
 .course-details {
   margin-top: 20px;
   padding: 20px;
@@ -156,34 +154,4 @@ body {
   margin: 5px 0;
   font-size: 1rem;
   color: #333333;
-}
-
-/* Courses (all) */
-.main-courses {
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.browse-course-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  width: 30%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-.browse-course-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: #33539E;
-}
-
-.browse-course-card p {
-  font-size: 1rem;
-  margin: 5px 0;
-  color: #333;
 }
