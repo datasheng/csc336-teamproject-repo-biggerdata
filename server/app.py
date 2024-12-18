@@ -215,6 +215,32 @@ def register_student():
     finally:
         cursor.close()
 
+@app.route('/api/add-student', methods=['POST'])
+def add_student():
+    data = request.get_json()
+    user_id = data.get('UserID')
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+
+    # Validate input
+    if not first_name or not last_name or not user_id:
+        return jsonify({"error": "UserID, firstName, and lastName are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    try:
+        # Insert data into the Student table, without using the Email field
+        cursor.execute('''
+            INSERT INTO Student (UserID, FirstName, LastName)
+            VALUES (%s, %s, %s)
+        ''', (user_id, first_name, last_name))
+        mysql.connection.commit()
+
+        return jsonify({"message": f"Student {first_name} {last_name} added successfully!", "UserID": user_id}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
 
 @app.route('/api/list_students_in_course', methods=['POST'])
 def list_students_in_course():
