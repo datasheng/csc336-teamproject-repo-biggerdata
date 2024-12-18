@@ -285,20 +285,19 @@ def add_class():
     seats = data.get('Seats')
 
     # Validate input
-    if not section_id or not course_id or seats is None:
-        return jsonify({"error": "SectionID, CourseID, and Seats are required fields"}), 400
+    if not section_id or not course_id or seats is None or not staff_id:
+        return jsonify({"error": "SectionID, CourseID, StaffID, and Seats are required fields"}), 400
 
     cursor = mysql.connection.cursor()
-
+    
     try:
         # Check if the StaffID exists in the Staff table
         cursor.execute('SELECT * FROM Staff WHERE Staff_ID = %s', (staff_id,))
         staff = cursor.fetchone()
-
         if not staff:
             return jsonify({"error": f"Staff with StaffID {staff_id} does not exist"}), 404
 
-        # Check if the SectionID already exists in Class table
+        # Check if the SectionID already exists in the Class table
         cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
         existing_class = cursor.fetchone()
         if existing_class:
@@ -310,19 +309,21 @@ def add_class():
         if not course:
             return jsonify({"error": f"Course with CourseID {course_id} does not exist"}), 404
 
-        # Insert the class into the Class table
+        # Insert the new class into the Class table
         cursor.execute('''
             INSERT INTO Class (SectionID, CourseID, StaffID, Seats)
             VALUES (%s, %s, %s, %s)
         ''', (section_id, course_id, staff_id, seats))
 
         mysql.connection.commit()
+
         return jsonify({"message": f"Class Section {section_id} added successfully!"}), 200
 
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
 
   
 @app.route('/api/get-status', methods=['POST'])
