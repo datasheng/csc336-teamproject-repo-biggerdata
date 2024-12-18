@@ -284,11 +284,20 @@ def add_class():
     staff_id = data.get('StaffID')
     seats = data.get('Seats')
 
+    # Validate input
     if not section_id or not course_id or seats is None:
         return jsonify({"error": "SectionID, CourseID, and Seats are required fields"}), 400
 
     cursor = mysql.connection.cursor()
+
     try:
+        # Check if the StaffID exists in the Staff table
+        cursor.execute('SELECT * FROM Staff WHERE Staff_ID = %s', (staff_id,))
+        staff = cursor.fetchone()
+
+        if not staff:
+            return jsonify({"error": f"Staff with StaffID {staff_id} does not exist"}), 404
+
         # Check if the SectionID already exists in Class table
         cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
         existing_class = cursor.fetchone()
@@ -302,20 +311,20 @@ def add_class():
             return jsonify({"error": f"Course with CourseID {course_id} does not exist"}), 404
 
         # Insert the class into the Class table
-        cursor.execute(
-            '''
+        cursor.execute('''
             INSERT INTO Class (SectionID, CourseID, StaffID, Seats)
             VALUES (%s, %s, %s, %s)
-            ''',
-            (section_id, course_id, staff_id, seats)
-        )
+        ''', (section_id, course_id, staff_id, seats))
+
         mysql.connection.commit()
         return jsonify({"message": f"Class Section {section_id} added successfully!"}), 200
+
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
 
+  
 @app.route('/api/get-status', methods=['POST'])
 def get_status():
     data = request.get_json()
@@ -632,6 +641,41 @@ def get_sections_for_course():
             return jsonify({"error": f"No sections found for Course {course_id}"}), 404
 
         return jsonify({'CourseID': course_id, 'Sections': sections}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+
+@app.route('/api/add-staff', methods=['POST'])
+def add_staff():
+    data = request.get_json()
+    staff_id = data.get('StaffID')
+    first_name = data.get('FirstName')
+    last_name = data.get('LastName')
+
+    # Validate input
+    if not staff_id or not first_name or not last_name:
+        return jsonify({"error": "StaffID, FirstName, and LastName are required fields"}), 400
+
+    cursor = mysql.connection.cursor()
+    
+    try:
+        # Check if the StaffID already exists
+        cursor.execute('SELECT * FROM Staff WHERE Staff_ID = %s', (staff_id,))
+        existing_staff = cursor.fetchone()
+        if existing_staff:
+            return jsonify({"error": f"Staff with StaffID {staff_id} already exists"}), 400
+
+        # Insert the new staff into the Staff table (without Email)
+        cursor.execute('''
+            INSERT INTO Staff (Staff_ID, FirstName, LastName)
+            VALUES (%s, %s, %s)
+        ''', (staff_id, first_name, last_name))
+
+        mysql.connection.commit()
+
+        return jsonify({"message": f"Staff {first_name} {last_name} added successfully!"}), 200
+
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
