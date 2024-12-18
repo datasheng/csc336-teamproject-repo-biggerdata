@@ -187,7 +187,14 @@ def register_student():
 
     cursor = mysql.connection.cursor()
     try:
-        # Check for duplicate entry
+        # Check if the UserID exists in the Student table
+        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
+        student = cursor.fetchone()
+
+        if not student:
+            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
+
+        # Check for duplicate entry in StudentCourses
         cursor.execute(
             'SELECT * FROM StudentCourses WHERE UserID = %s AND CourseID = %s',
             (user_id, course_id)
@@ -207,6 +214,7 @@ def register_student():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
 
 @app.route('/api/list_students_in_course', methods=['POST'])
 def list_students_in_course():
