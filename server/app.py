@@ -179,37 +179,40 @@ def list_departments():
 def register_student():
     data = request.get_json()
     user_id = data.get('UserID')
-    course_id = data.get('CourseID')
+    section_id = data.get('SectionID')  # Register student for a section, not a course
 
     # Validate input
-    if not user_id or not course_id:
-        return jsonify({"error": "UserID and CourseID are required fields"}), 400
+    if not user_id or not section_id:
+        return jsonify({"error": "UserID and SectionID are required fields"}), 400
 
     cursor = mysql.connection.cursor()
     try:
-        # Check if the UserID exists in the Student table
+        # Check if the student exists in the Student table
         cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
         student = cursor.fetchone()
-
         if not student:
             return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
 
-        # Check for duplicate entry in StudentCourses
-        cursor.execute(
-            'SELECT * FROM StudentCourses WHERE UserID = %s AND CourseID = %s',
-            (user_id, course_id)
-        )
+        # Check if the section exists in the Class table (instead of Course table)
+        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
+        section = cursor.fetchone()
+        if not section:
+            return jsonify({"error": f"Section with SectionID {section_id} does not exist"}), 404
+
+        # Check if the student is already enrolled in the section
+        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, section_id))
         existing_entry = cursor.fetchone()
         if existing_entry:
-            return jsonify({"error": "Student is already registered for this course"}), 400
+            return jsonify({"error": "Student is already registered for this section"}), 400
 
-        # Insert data into StudentCourses table
+        # Insert data into the StudentSchedule table to register the student for the section
         cursor.execute(
-            'INSERT INTO StudentCourses (UserID, CourseID) VALUES (%s, %s)',
-            (user_id, course_id)
+            'INSERT INTO StudentSchedule (UserID, SectionID) VALUES (%s, %s)',
+            (user_id, section_id)
         )
         mysql.connection.commit()
-        return jsonify({'message': f'Student {user_id} registered for course {course_id} successfully!'}), 200
+
+        return jsonify({'message': f'Student {user_id} registered for section {section_id} successfully!'}), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
