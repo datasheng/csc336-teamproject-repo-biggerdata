@@ -38,8 +38,6 @@ CREATE TABLE Staff (
     LastName VARCHAR(255)
 );
 
-
-
 CREATE TABLE Class (
     SectionID INT PRIMARY KEY,
     CourseID INT,
@@ -167,17 +165,8 @@ VALUES
     (6, 'David', 'Lee', 'david.lee@techuniversity.edu'),
     (7, 'Alice', 'Wilson', 'alice.wilson@techuniversity.edu'),
     (8, 'Robert', 'Harris', 'robert.harris@techuniversity.edu');
-    (1, 'John', 'Doe', 'john.doe@techuniversity.edu'),
-    (2, 'Jane', 'Smith', 'jane.smith@techuniversity.edu'),
-    (3, 'Emily', 'White', 'emily.white@techuniversity.edu'),
-    (4, 'Michael', 'Brown', 'michael.brown@techuniversity.edu'),
-    (5, 'Sarah', 'Taylor', 'sarah.taylor@techuniversity.edu'),
-    (6, 'David', 'Lee', 'david.lee@techuniversity.edu'),
-    (7, 'Alice', 'Wilson', 'alice.wilson@techuniversity.edu'),
-    (8, 'Robert', 'Harris', 'robert.harris@techuniversity.edu');
 
--- Insert classes
--- Insert classes
+
 INSERT INTO Class (SectionID, CourseID, StaffID, Seats)
 VALUES
     (1, 101, 1, 30),
@@ -196,8 +185,7 @@ VALUES
     (14, 304, 6, 30),
     (15, 305, 7, 25);
 
--- Insert class schedules
--- Insert class schedules
+
 INSERT INTO ClassSchedule (SectionID, DayOfWeek, StartTime, EndTime)
 VALUES
     (1, 'Monday', '09:00', '10:15'),
@@ -215,11 +203,6 @@ VALUES
     (13, 'Wednesday', '09:00', '10:15'),
     (14, 'Thursday', '10:30', '11:45'),
     (15, 'Friday', '12:00', '13:15');
-
--- Insert revenue stream for Tech University
-INSERT INTO RevenueStream (UniversityID, UniversityName, StudentCount, NumClasses)
-VALUES
-    (1, 'Tech University', 5000, 2000);
 
 -- Insert revenue stream for Tech University
 INSERT INTO RevenueStream (UniversityID, UniversityName, StudentCount, NumClasses)
