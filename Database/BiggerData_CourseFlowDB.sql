@@ -20,8 +20,10 @@ CREATE TABLE Department (
 );
 
 -- UPDATED Included CourseName
+-- UPDATED Included CourseName
 CREATE TABLE Course (
     CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(255),
     CourseName VARCHAR(255),
     CreditHours INT,
     DepartmentID INT,
@@ -29,12 +31,14 @@ CREATE TABLE Course (
 );
 
 -- UPDATED Included Professor Name
+-- UPDATED Included Professor Name
 CREATE TABLE Staff (
     Staff_ID INT PRIMARY KEY,
     Email_ID VARCHAR(255) UNIQUE,
     FirstName VARCHAR(255),
     LastName VARCHAR(255)
 );
+
 
 
 CREATE TABLE Class (
@@ -51,6 +55,8 @@ CREATE TABLE Student (
     UserID INT PRIMARY KEY,
     FirstName VARCHAR(255) NOT NULL,
     LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255) NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
     UserEmail VARCHAR(255) UNIQUE
 );
 
@@ -64,6 +70,7 @@ CREATE TABLE CoursePrerequisites (
 
 CREATE TABLE ClassSchedule (
     SectionID INT,
+    DayOfWeek VARCHAR(10),
     DayOfWeek VARCHAR(10),
     StartTime TIME,
     EndTime TIME,
@@ -122,12 +129,15 @@ VALUES
     (1, 'Tech University', '123 University Blvd, Tech City', 'contact@techuniversity.edu');
 
 
+
 INSERT INTO Department (DepartmentID, DepartmentName)
 VALUES
     (1, 'Computer Science'),
     (2, 'Mathematics'),
     (3, 'Physics');
 
+-- UPDATED dummy data now has course names
+INSERT INTO Course (CourseID, CourseName, CreditHours, DepartmentID)
 -- UPDATED dummy data now has course names
 INSERT INTO Course (CourseID, CourseName, CreditHours, DepartmentID)
 VALUES
@@ -158,7 +168,16 @@ VALUES
     (6, 'David', 'Lee', 'david.lee@techuniversity.edu'),
     (7, 'Alice', 'Wilson', 'alice.wilson@techuniversity.edu'),
     (8, 'Robert', 'Harris', 'robert.harris@techuniversity.edu');
+    (1, 'John', 'Doe', 'john.doe@techuniversity.edu'),
+    (2, 'Jane', 'Smith', 'jane.smith@techuniversity.edu'),
+    (3, 'Emily', 'White', 'emily.white@techuniversity.edu'),
+    (4, 'Michael', 'Brown', 'michael.brown@techuniversity.edu'),
+    (5, 'Sarah', 'Taylor', 'sarah.taylor@techuniversity.edu'),
+    (6, 'David', 'Lee', 'david.lee@techuniversity.edu'),
+    (7, 'Alice', 'Wilson', 'alice.wilson@techuniversity.edu'),
+    (8, 'Robert', 'Harris', 'robert.harris@techuniversity.edu');
 
+-- Insert classes
 -- Insert classes
 INSERT INTO Class (SectionID, CourseID, StaffID, Seats)
 VALUES
@@ -179,6 +198,7 @@ VALUES
     (15, 305, 7, 25);
 
 -- Insert class schedules
+-- Insert class schedules
 INSERT INTO ClassSchedule (SectionID, DayOfWeek, StartTime, EndTime)
 VALUES
     (1, 'Monday', '09:00', '10:15'),
@@ -196,6 +216,11 @@ VALUES
     (13, 'Wednesday', '09:00', '10:15'),
     (14, 'Thursday', '10:30', '11:45'),
     (15, 'Friday', '12:00', '13:15');
+
+-- Insert revenue stream for Tech University
+INSERT INTO RevenueStream (UniversityID, UniversityName, StudentCount, NumClasses)
+VALUES
+    (1, 'Tech University', 5000, 2000);
 
 -- Insert revenue stream for Tech University
 INSERT INTO RevenueStream (UniversityID, UniversityName, StudentCount, NumClasses)
