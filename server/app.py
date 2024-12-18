@@ -191,7 +191,7 @@ def register_student():
 
     cursor = mysql.connection.cursor()
     try:
-        # Check if the student is already registered for the section
+        # Check for duplicate entry in StudentSchedule (i.e., student is already enrolled in this section)
         cursor.execute(
             'SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s',
             (user_id, section_id)
@@ -206,26 +206,20 @@ def register_student():
             (user_id, section_id)
         )
 
-        # Check if class schedule exists for the given section
-        cursor.execute('SELECT * FROM ClassSchedule WHERE SectionID = %s', (section_id,))
-        class_schedule = cursor.fetchone()
-
-        # If no class schedule exists for the section, create one
-        if not class_schedule:
-            # Insert a default class schedule for the section (adjust timing as needed)
-            cursor.execute('''
-                INSERT INTO ClassSchedule (SectionID, DayOfWeek, StartTime, EndTime)
-                VALUES (%s, 'Monday', '09:00:00', '11:00:00')
-            ''', (section_id,))
+        # Now, insert the default status into the Status table
+        cursor.execute(
+            'INSERT INTO Status (UserID, SectionID, Status) VALUES (%s, %s, %s)',
+            (user_id, section_id, 'Enrolled')  # Default status is "Enrolled"
+        )
 
         mysql.connection.commit()
-        return jsonify({'message': f'Student {user_id} registered for section {section_id} successfully!'}), 200
 
+        return jsonify({'message': f'Student {user_id} successfully registered for Section {section_id}!'}), 200
     except Exception as e:
-        mysql.connection.rollback()
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
 
 @app.route('/api/add-student', methods=['POST'])
 def add_student():
@@ -336,8 +330,6 @@ def add_class():
     finally:
         cursor.close()
 
-
-  
 @app.route('/api/get-status', methods=['POST'])
 def get_status():
     data = request.get_json()
@@ -350,37 +342,31 @@ def get_status():
 
     cursor = mysql.connection.cursor()
     try:
-        # Check if the user exists in Student table
-        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
-        student = cursor.fetchone()
-        if not student:
-            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
-
-        # Check if the section exists in Class table (not ClassSection anymore)
-        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
-        section = cursor.fetchone()
-        if not section:
-            return jsonify({"error": f"Class with SectionID {section_id} does not exist"}), 404
-
-        # Fetch the status of the student in the class
-        cursor.execute(
-            '''
+        # Check if the status exists for the student in the specific section
+        cursor.execute('''
             SELECT Status
             FROM Status
             WHERE UserID = %s AND SectionID = %s
-            ''',
-            (user_id, section_id)
-        )
+        ''', (user_id, section_id))
+
+        # Fetch the status from the Status table
         status_entry = cursor.fetchone()
+
         if not status_entry:
-            return jsonify({"error": f"No status found for Student {user_id} in Class {section_id}"}), 404
+            return jsonify({"error": f"No status found for Student {user_id} in Section {section_id}"}), 404
 
         # Return the status
-        return jsonify({"UserID": user_id, "SectionID": section_id, "Status": status_entry['Status']}), 200
+        return jsonify({
+            "UserID": user_id,
+            "SectionID": section_id,
+            "Status": status_entry['Status']
+        }), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
+
 
 @app.route('/api/add-department', methods=['POST'])
 def add_department():
