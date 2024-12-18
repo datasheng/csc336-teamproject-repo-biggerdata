@@ -99,25 +99,27 @@ def logout():
 def add_course():
     data = request.get_json()
     courseID = data.get('courseID')
+    courseName = data.get('courseName')  # Make sure to include courseName
     creditHours = data.get('creditHours')
     departmentID = data.get('departmentID')
     
-    if not courseID or not creditHours or not departmentID:
-        return jsonify({'error': 'CourseID, CreditHours, and DepartmentID are required'}), 400
+    if not courseID or not courseName or not creditHours or not departmentID:
+        return jsonify({'error': 'CourseID, CourseName, CreditHours, and DepartmentID are required'}), 400
     
     cursor = mysql.connection.cursor()
     try:
-        # Insert the course into the Course table
+        # Insert the course into the Course table, including CourseName
         cursor.execute('''
-            INSERT INTO Course (CourseID, CreditHours, DepartmentID) 
-            VALUES (%s, %s, %s)
-        ''', (courseID, creditHours, departmentID))
+            INSERT INTO Course (CourseID, CourseName, CreditHours, DepartmentID) 
+            VALUES (%s, %s, %s, %s)
+        ''', (courseID, courseName, creditHours, departmentID))
         mysql.connection.commit()
         cursor.close()
         return jsonify({'message': 'Course added successfully'}), 200
     except Exception as e:
         cursor.close()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/list_courses', methods=['GET'])
 def list_courses():
@@ -567,7 +569,7 @@ def get_course_details():
 
     cursor = mysql.connection.cursor()
     try:
-        # Check if the course exists
+        # Check if the course exists and fetch details, including CourseName
         cursor.execute('SELECT * FROM Course WHERE CourseID = %s', (course_id,))
         course = cursor.fetchone()
 
@@ -584,7 +586,7 @@ def get_course_details():
         # Return the course details along with department information
         return jsonify({
             'CourseID': course['CourseID'],
-            'CourseName': course['CourseName'],
+            'CourseName': course['CourseName'],  # Return CourseName
             'CreditHours': course['CreditHours'],
             'DepartmentName': department['DepartmentName']
         }), 200
@@ -592,6 +594,7 @@ def get_course_details():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
 
 @app.route('/api/get-staff-schedule', methods=['POST'])
 def get_staff_schedule():
