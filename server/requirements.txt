@@ -3,3 +3,4 @@ mysqlclient
 flask-mysqldb
 flask-cors
 python-dotenv
+gunicorn

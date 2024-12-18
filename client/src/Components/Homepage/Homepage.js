@@ -155,7 +155,7 @@ const Homepage = () => {
                 </h3>
                 {dropdowns.university && (
                   <ul className="university-dropdown-menu">
-                    <li><b>University ID:</b> Delete maybe? </li>
+                    <li><b>University ID:</b> 1 </li>
                     <li><b>University Name:</b> The City College of New York </li>
                   </ul>
                 )}
