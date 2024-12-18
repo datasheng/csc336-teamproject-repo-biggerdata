@@ -117,7 +117,7 @@ a:hover{
     margin: 15px 0;
 }
 
-button{
+button.submit{
     color: white;
     background: linear-gradient(180deg,#005C97, #2980B9, #6DD5FA);
     font-size: 16px;
