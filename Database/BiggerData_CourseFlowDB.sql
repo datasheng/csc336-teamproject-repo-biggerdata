@@ -24,7 +24,6 @@ CREATE TABLE Department (
 CREATE TABLE Course (
     CourseID INT PRIMARY KEY,
     CourseName VARCHAR(255),
-    CourseName VARCHAR(255),
     CreditHours INT,
     DepartmentID INT,
     FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID)
