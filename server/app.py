@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 import MySQLdb
+from datetime import timedelta
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -179,7 +181,7 @@ def list_departments():
 def register_student():
     data = request.get_json()
     user_id = data.get('UserID')
-    section_id = data.get('SectionID')  # Register student for a section, not a course
+    section_id = data.get('SectionID')
 
     # Validate input
     if not user_id or not section_id:
@@ -187,33 +189,38 @@ def register_student():
 
     cursor = mysql.connection.cursor()
     try:
-        # Check if the student exists in the Student table
-        cursor.execute('SELECT * FROM Student WHERE UserID = %s', (user_id,))
-        student = cursor.fetchone()
-        if not student:
-            return jsonify({"error": f"Student with UserID {user_id} does not exist"}), 404
-
-        # Check if the section exists in the Class table (instead of Course table)
-        cursor.execute('SELECT * FROM Class WHERE SectionID = %s', (section_id,))
-        section = cursor.fetchone()
-        if not section:
-            return jsonify({"error": f"Section with SectionID {section_id} does not exist"}), 404
-
-        # Check if the student is already enrolled in the section
-        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, section_id))
+        # Check if the student is already registered for the section
+        cursor.execute(
+            'SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s',
+            (user_id, section_id)
+        )
         existing_entry = cursor.fetchone()
         if existing_entry:
             return jsonify({"error": "Student is already registered for this section"}), 400
 
-        # Insert data into the StudentSchedule table to register the student for the section
+        # Insert data into StudentSchedule table
         cursor.execute(
             'INSERT INTO StudentSchedule (UserID, SectionID) VALUES (%s, %s)',
             (user_id, section_id)
         )
-        mysql.connection.commit()
 
+        # Check if class schedule exists for the given section
+        cursor.execute('SELECT * FROM ClassSchedule WHERE SectionID = %s', (section_id,))
+        class_schedule = cursor.fetchone()
+
+        # If no class schedule exists for the section, create one
+        if not class_schedule:
+            # Insert a default class schedule for the section (adjust timing as needed)
+            cursor.execute('''
+                INSERT INTO ClassSchedule (SectionID, DayOfWeek, StartTime, EndTime)
+                VALUES (%s, 'Monday', '09:00:00', '11:00:00')
+            ''', (section_id,))
+
+        mysql.connection.commit()
         return jsonify({'message': f'Student {user_id} registered for section {section_id} successfully!'}), 200
+
     except Exception as e:
+        mysql.connection.rollback()
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
@@ -394,7 +401,7 @@ def add_department():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
-        
+
 @app.route('/api/get-student-schedule', methods=['POST'])
 def get_student_schedule():
     data = request.get_json()  # Receive JSON data in the body
@@ -422,15 +429,47 @@ def get_student_schedule():
         ''', (user_id,))
 
         schedule = cursor.fetchall()
+
         if not schedule:
             return jsonify({"message": "No classes found for this student."}), 404
 
+        # Format StartTime and EndTime as strings (e.g., "HH:MM:SS")
+        formatted_schedule = []
+        for item in schedule:
+            start_time = None
+            end_time = None
+
+            if item['StartTime']:
+                # If StartTime is a timedelta, convert to "HH:MM:SS"
+                if isinstance(item['StartTime'], timedelta):
+                    start_time = str(item['StartTime'])
+                else:
+                    start_time = item['StartTime'].strftime('%H:%M:%S')
+
+            if item['EndTime']:
+                # If EndTime is a timedelta, convert to "HH:MM:SS"
+                if isinstance(item['EndTime'], timedelta):
+                    end_time = str(item['EndTime'])
+                else:
+                    end_time = item['EndTime'].strftime('%H:%M:%S')
+
+            formatted_schedule.append({
+                'SectionID': item['SectionID'],
+                'CourseID': item['CourseID'],
+                'DayOfWeek': item['DayOfWeek'],
+                'StartTime': start_time,
+                'EndTime': end_time
+            })
+
         # Return the schedule as a JSON response
-        return jsonify({'UserID': user_id, 'Schedule': schedule}), 200
+        return jsonify({'UserID': user_id, 'Schedule': formatted_schedule}), 200
+
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
         cursor.close()
+
+
 
 @app.route('/api/add-class-to-schedule', methods=['POST'])
 def add_class_to_schedule():
@@ -496,48 +535,6 @@ def deregister_student():
         mysql.connection.commit()
 
         return jsonify({"message": f"Student {user_id} successfully deregistered from Course {course_id}!"}), 200
-    except Exception as e:
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
-    finally:
-        cursor.close()
-
-@app.route('/api/update_student_schedule', methods=['POST'])
-def update_student_schedule():
-    data = request.get_json()
-    user_id = data.get('UserID')
-    old_section_id = data.get('OldSectionID')
-    new_section_id = data.get('NewSectionID')
-
-    # Validate input
-    if not user_id or not old_section_id or not new_section_id:
-        return jsonify({"error": "UserID, OldSectionID, and NewSectionID are required fields"}), 400
-
-    cursor = mysql.connection.cursor()
-    try:
-        # Check if the student is enrolled in the old section
-        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, old_section_id))
-        existing_enrollment = cursor.fetchone()
-        if not existing_enrollment:
-            return jsonify({"error": "Student is not enrolled in the specified old section"}), 404
-
-        # Check if the new section exists
-        cursor.execute('SELECT * FROM ClassSection WHERE SectionID = %s', (new_section_id,))
-        new_section = cursor.fetchone()
-        if not new_section:
-            return jsonify({"error": "New section does not exist"}), 404
-
-        # Check if the student is already enrolled in the new section
-        cursor.execute('SELECT * FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, new_section_id))
-        existing_schedule = cursor.fetchone()
-        if existing_schedule:
-            return jsonify({"error": "Student is already enrolled in the new section"}), 400
-
-        # Remove the student from the old section and add to the new one
-        cursor.execute('DELETE FROM StudentSchedule WHERE UserID = %s AND SectionID = %s', (user_id, old_section_id))
-        cursor.execute('INSERT INTO StudentSchedule (UserID, SectionID) VALUES (%s, %s)', (user_id, new_section_id))
-
-        mysql.connection.commit()
-        return jsonify({"message": "Student's schedule updated successfully!"}), 200
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     finally:
