@@ -1,0 +1,158 @@
+/* General Page Layout */
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.sched-back-button {
+  background: linear-gradient(180deg, #FDC830, #d29a01, #d19a00);
+  transition: transform 0.2s;
+  color: white;
+  padding: 10px 20px;
+  border: solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.remove-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #33539E;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Content */
+.schedule-content {
+  display: flex;
+  gap: 20px;
+}
+
+/* Search and courses */
+.search-and-details {
+  width: 30%;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.course-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+}
+
+.course-card h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.course-card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Calendar */
+.calendar-section {
+  width: 50%;
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+  display: flex;
+}
+
+.calendar-day-header {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+}
+
+.time-column-header {
+  width: 70px;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-time-row {
+  display: flex;
+}
+
+.calendar-cell {
+  flex: 1;
+  border: 1px solid #ccc;
+  min-height: 80px;
+  padding: 5px;
+  text-align: center;
+}
+
+.time-column {
+  width: 70px;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  padding: 5px;
+}
+
+.calendar-course {
+  background-color: #33539E;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+/* Cart */
+.cart-section {
+  width: 20%;
+}
