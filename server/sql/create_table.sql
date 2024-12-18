@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS Department (
 
 CREATE TABLE IF NOT EXISTS Course (
     CourseID INT,
+    CourseName VARCHAR(255),
     CreditHours INT,
     DepartmentID INT,
     PRIMARY KEY (CourseID),
@@ -40,14 +41,16 @@ CREATE TABLE IF NOT EXISTS Course (
 CREATE TABLE IF NOT EXISTS Staff (
     Staff_ID INT,
     Email_ID VARCHAR(255) UNIQUE,
+    FirstName VARCHAR(255),
+    LastName VARCHAR(255),
     PRIMARY KEY (Staff_ID)
 );
 
 CREATE TABLE IF NOT EXISTS Class (
-    SectionID INT,
+    SectionID INT PRIMARY KEY,
     CourseID INT,
     StaffID INT,
-    Seat INT,
+    Seats INT,
     PRIMARY KEY (SectionID),
     FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
     FOREIGN KEY (StaffID) REFERENCES Staff(Staff_ID)
@@ -55,6 +58,8 @@ CREATE TABLE IF NOT EXISTS Class (
 
 CREATE TABLE IF NOT EXISTS Student (
     UserID INT,
+    FirstName VARCHAR(255) NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
     UserEmail VARCHAR(255) UNIQUE,
     PRIMARY KEY (UserID)
 );
@@ -107,5 +112,5 @@ CREATE TABLE IF NOT EXISTS Status (
     Status VARCHAR(20),
     PRIMARY KEY (UserID, SectionID),
     FOREIGN KEY (UserID) REFERENCES Student(UserID),
-    FOREIGN KEY (SectionID) REFERENCES ClassSection(SectionID)
+    FOREIGN KEY (SectionID) REFERENCES Class(SectionID)
 );
