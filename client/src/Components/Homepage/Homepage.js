@@ -139,7 +139,7 @@ const Homepage = () => {
                 {dropdowns.personal && (
                   <ul className="personal-dropdown-menu">
                     <li><b>Student ID:</b> {account.id} </li>
-                    <li><b>Username:</b> {account.email} </li>
+                    <li><b>Username:</b> {account.firstName} {account.lastName} </li>
                     <li><b>Email:</b> {account.email} </li>
                   </ul>
                 )}
